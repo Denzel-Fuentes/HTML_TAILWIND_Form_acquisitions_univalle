@@ -23,7 +23,42 @@ http.createServer((req, res) => {
           "unidad": "FRASCO",
           "cantidad": 10
         },
-
+        {
+          "ID": 2,
+          "detalle": "SALICILATO DE METILO x 450gr",
+          "unidad": "FRASCO",
+          "cantidad": 8
+        },
+        {
+          "ID": 1,
+          "detalle": "SALICILATO DE METILO x 250gr",
+          "unidad": "FRASCO",
+          "cantidad": 1
+        },
+        {
+          "ID": 3,
+          "detalle": "SALICILATO DE METILO x 350gr",
+          "unidad": "FRASCO",
+          "cantidad": 10
+        },
+        {
+          "ID": 2,
+          "detalle": "SALICILATO DE METILO x 450gr",
+          "unidad": "FRASCO",
+          "cantidad": 8
+        },
+        {
+          "ID": 1,
+          "detalle": "SALICILATO DE METILO x 250gr",
+          "unidad": "FRASCO",
+          "cantidad": 1
+        },
+        {
+          "ID": 3,
+          "detalle": "SALICILATO DE METILO x 350gr",
+          "unidad": "FRASCO",
+          "cantidad": 10
+        },
         {
           "ID": 2,
           "detalle": "SALICILATO DE METILO x 450gr",
@@ -31,8 +66,7 @@ http.createServer((req, res) => {
           "cantidad": 8
         },
       ];
-
-      // Generar contenido HTML dinámico del formulario con Tailwind
+      let solicitud = 2
       const contenidoHtml = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -66,7 +100,29 @@ http.createServer((req, res) => {
   background-repeat: repeat; /* Evita que la imagen se repita */
   height: 100vh; /* Opcional: establece la altura del cuerpo para que ocupe toda la ventana visible */
 }
-
+  /*Modal styles*/
+   .modal {
+   display: flex;
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            text-align: left;
+        }
     </style>
 
 </head>
@@ -124,7 +180,7 @@ http.createServer((req, res) => {
                           </div>
                           <div class="w-full md:w-3/4">
                               <div class="mb-4">
-                                  <label class="block text-sm font-medium text-gray-700">Precio Unitario</label>
+                                  <label class="block text-sm font-medium text-gray-700">¿Cual es el Precio Unitario ?</label>
                                   <div class="flex items-center">
                                       <input class="minimal-input input-precio block w-full mt-1 p-2 bg-transparent border-b border-gray-300 focus:outline-none focus:border-purple-600 transition duration-300" 
                                         type="number" step="0.01" name="precioUnitario_${detalleObj.detalle}" 
@@ -135,7 +191,7 @@ http.createServer((req, res) => {
                                   </div>
                               </div>
                               <div class="mb-4">
-                                  <label class="block text-sm font-medium text-gray-700">Observaciones</label>
+                                  <label class="block text-sm font-medium text-gray-700">¿Tiene Observaciones de este Producto?</label>
                                   <textarea class="minimal-textarea block w-full mt-1 p-2 bg-transparent border-b border-gray-300 focus:outline-none focus:border-purple-600 transition duration-300" name="observaciones_${detalleObj.detalle}" rows="4" placeholder="Añade observaciones (opcional)"></textarea>
                               </div>
                           </div>
@@ -145,16 +201,17 @@ http.createServer((req, res) => {
           `).join('')}
           
               
-  <div class="flex justify-between mt-6">
-                    <button class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-purple-700" type="button" onclick="previousSection()">Anterior</button>
-                    <button class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-purple-700" type="button" onclick="nextSection()">Siguiente</button>
-                  
-                </div>
+<div class="flex justify-between mt-6">
+    <button class="bg-gray-400 text-white px-16 py-2 rounded hover:bg-gray-600" type="button" onclick="previousSection()">Anterior</button>
+    <button class="bg-gray-400 text-white px-16 py-2 rounded hover:bg-gray-600" type="button" onclick="nextSection()">Siguiente</button>
+</div>
+
+
 
                 <!-- Tiempo de entrega -->
 
                 <div class="mb-6 bg-white p-4 rounded-lg mt-6">
-        <label class="block text-lg font-bold mb-2 text-gray-700" for="tiempoEntrega">Tiempo de Entrega</label>
+        <label class="block text-lg font-bold mb-2 text-gray-700" for="tiempoEntrega">¿Cual es el Tiempo de Entrega?</label>
         <input type="text" id="tiempoEntrega" class="w-full p-2 border-b border-gray-300 focus:outline-none focus:border-purple-600 transition duration-300" placeholder="Ingresa el tiempo de entrega" value="ENTREGA A CONVENIR">
     </div>
                 <!-- Campo para cargar archivo -->
@@ -164,14 +221,30 @@ http.createServer((req, res) => {
                     <p class="text-sm text-gray-400 mt-2">Puedes cargar un archivo de cotización si prefieres no rellenar el formulario manualmente.</p>
                 </div>
                 <div class="flex justify-end mt-6">
-                    <button class="bg-gray-400 text-white px-4 py-2 rounded hover:bg-purple-700" type="submit">Enviar</button>
+           <button class="w-full sm:w-auto bg-purple-800 text-white px-6 py-3 lg:px-8 lg:py-4 rounded hover:bg-purple-700" type="submit">Enviar Respuestas</button>
+
                 </div>
             </form>
         </div>
     </section>
+<div id="summaryModal" class="modal">
+    <div class="modal-content">
+        <h2 class="text-xl font-bold mb-4">Resumen de los datos</h2>
+        <div id="summaryContent" class="bg-white divide-y divide-gray-200" style="max-height: 400px; overflow-y: auto;">
+            <ul id="resumenLista" class="list-disc pl-5">
+                <!-- Lista de productos -->
+            </ul>
+        </div>
+        <div class="flex justify-end mt-4">
+            <button class="bg-gray-400 text-white px-4 py-2 rounded mr-2" onclick="closeModal()">Cancelar</button>
+            <button class="bg-purple-700 text-white px-4 py-2 rounded" onclick="confirmSend()">Confirmar y Enviar</button>
+        </div>
+    </div>
+</div>
 
 <script>
-      let proveedor = ${proveedor}
+      let solicitud = ${solicitud}
+      let proveedor = 0
       let dadta = ${JSON.stringify(data)}
       let currentSection = 0;
       const totalSections = ${data.length}; // Número total de productos
@@ -229,60 +302,91 @@ http.createServer((req, res) => {
           totalElement.textContent = "= 0.00";
         }
       }
+    function showModal() {
+        document.getElementById("summaryModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("summaryModal").style.display = "none";
+    }
+         function confirmSend() {
+        closeModal();
+        postDatos(window.tempResponse);
+    }
 
       // Modificación: Hacer que enviarDatos sea una función asíncrona
-      async function enviarDatos() {
-          const formSections = document.querySelectorAll('.product-section');
-          const datosProductos = [];
-        const tiempoEntrega = document.getElementById('tiempoEntrega').value;
+    async function enviarDatos() {
+        const formSections = document.querySelectorAll('.product-section');
+        const datosProductos = [];
+        const tiempoEntrega = document.getElementById('tiempoEntrega').value ;
+let resumenHTML = ""
+            resumenHTML += "<li class='mb-4'><strong>Tiempo de entrega:</strong> "+tiempoEntrega + "</li>";
 
-          for (let index = 0; index < formSections.length; index++) {
-              const section = formSections[index];
-              const detalleObj = dadta[index];
-              const imagenInput = section.querySelector('input[name="imagenProducto_' + detalleObj.detalle + '"]');
-              const precioInput = section.querySelector('input[name="precioUnitario_' + detalleObj.detalle + '"]');
-              const observacionesTextarea = section.querySelector('textarea[name="observaciones_' + detalleObj.detalle + '"]');
-              
-              let imagenData = '';
-              if (imagenInput.files.length > 0) {
-                  const file = imagenInput.files[0];
-                  imagenData = await readFileAsDataURL(file);
-              }
+ const fileUploadInput = document.querySelector('#uploadFile');
+        const file = fileUploadInput && fileUploadInput.files[0];
+        let fileContent = '';
+        let fileName = "";
 
-              datosProductos.push({
-                  "ID": detalleObj.ID,
-                  "detalle": detalleObj.detalle,
-                  "unidad": detalleObj.unidad,
-                  "cantidad": detalleObj.cantidad,
-                  "imagen": imagenData,
-                  "observaciones": observacionesTextarea.value,
-                  "precio": parseFloat(precioInput.value) || 0,
-                  "total": (parseFloat(precioInput.value) || 0) * detalleObj.cantidad
-              });
-          }
+        if (file) {
+            fileName = file.name;
+            fileContent = await readFileAsDataURL(file);
+            resumenHTML += "<li class='mb-4'><strong>Archivo de cotización:</strong> " + fileName + "</li>";
+        } else {
+            resumenHTML += "<li class='mb-4'><strong>Archivo de cotización:</strong> No se ha cargado un archivo</li>";
+        }
 
-          // Manejar el archivo de cotización opcional
-          const fileUploadInput = document.querySelector('#uploadFile');
-          const file = fileUploadInput && fileUploadInput.files[0];
-          let fileContent = '';
-          let fileName = null;
 
-          if (file) {
-              fileName = file.name;
-              fileContent = await readFileAsDataURL(file);
-          }
+        for (let index = 0; index < formSections.length; index++) {
+            const section = formSections[index];
+            const detalleObj = dadta[index];
+            const imagenInput = section.querySelector('input[name="imagenProducto_' + detalleObj.detalle + '"]');
+            const precioInput = section.querySelector('input[name="precioUnitario_' + detalleObj.detalle + '"]');
+            const observacionesTextarea = section.querySelector('textarea[name="observaciones_' + detalleObj.detalle + '"]');
 
-          const response = {
-              "proveedor": proveedor, // Asegúrate de que 'proveedor' esté definido
-              "productos": datosProductos,
-              "file": fileName,
-              "tiempo_entrega":tiempoEntrega,
-              "fileContent": fileContent // Asignamos el contenido del archivo aquí directamente
-          };
-          console.log(response)
-          console.log(JSON.stringify(response))
-          // Enviar los datos
-          //postDatos(response);
+            let imagenData = '';
+            if (imagenInput.files.length > 0) {
+                const file = imagenInput.files[0];
+                imagenData = await readFileAsDataURL(file);
+            }
+
+            datosProductos.push({
+                "ID": detalleObj.ID,
+                "detalle": detalleObj.detalle,
+                "unidad": detalleObj.unidad,
+                "cantidad": detalleObj.cantidad,
+                "imagen": imagenData,
+                "observaciones": observacionesTextarea.value,
+                "precio": parseFloat(precioInput.value) || 0,
+                "total": (parseFloat(precioInput.value) || 0) * detalleObj.cantidad
+            });
+            let item = index;
+            item+=1
+              let precio = parseFloat(precioInput.value) || 0;
+            let total = precio * detalleObj.cantidad;
+            let colorCheck = precio != 0 ? "" : "bg-red-200" 
+            resumenHTML += "<li class='mb-4'>";
+            resumenHTML += "<strong>Producto #"+item+":</strong> " + detalleObj.detalle + "<br>";
+            resumenHTML += "<strong>Cantidad:</strong> " + detalleObj.cantidad + " " + detalleObj.unidad + "<br>";
+  resumenHTML += "<strong class='" + colorCheck + "'>Precio Unitario:</strong> " + precio + "<br>";
+            resumenHTML += "<strong class='" + colorCheck + "'>Total:</strong> " + total + "<br>";
+            resumenHTML += "<strong>Observaciones:</strong> " + (observacionesTextarea.value || 'Ninguna') + "<br>";
+            resumenHTML += "</li>";
+        }
+
+       
+
+        const response = {
+            "solicitud":solicitud,
+            "proveedor": proveedor,
+            "tiempo_entrega": tiempoEntrega,
+            "productos": datosProductos,
+            "file": fileName,
+            "fileContent": fileContent
+        };
+
+        document.getElementById("resumenLista").innerHTML = resumenHTML;
+        showModal();
+        window.tempResponse = response;
       }
 
       // Función auxiliar para leer archivos como Data URL (base64)
@@ -293,12 +397,12 @@ http.createServer((req, res) => {
               reader.onerror = reject;
               reader.readAsDataURL(file);
           });
-      }
+    }
 
       function postDatos(datosProductos) {
           console.log(datosProductos); // Puedes ver cómo queda el JSON final antes de enviar
-
-          fetch('https://prod-93.westus.logic.azure.com:443/workflows/d7335d6eda554f328e5d52e9b6deeb60/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=IS5ygImFKGtkDr6J4p8r0qJMarw5L1y_FXgEiplN9ow', {
+          if(datosProductos.file !== ""){
+           fetch('url', {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json'
@@ -308,12 +412,36 @@ http.createServer((req, res) => {
           .then(response => response.json())
           .then(data => {
               console.log('Respuesta:', data);
-              alert('Datos enviados correctamente.');
+              if(data.msg == "ok"){
+                  alert('Archivo enviado correctamente');
+              }
           })
           .catch(error => {
               console.error('Error:', error);
               alert('Hubo un error al enviar los datos.');
           });
+          }else{
+            fetch('url', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(datosProductos)
+          })
+          .then(response => response.json())
+          .then(data => {
+              console.log('Respuesta:', data);
+              if(data.msg == "ok"){
+                            alert('Datos enviados correctamente.');
+
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              alert('Hubo un error al enviar los datos.');
+          });
+          }
+         
       }
 
       document.addEventListener('DOMContentLoaded', () => {
@@ -343,7 +471,7 @@ http.createServer((req, res) => {
 
 </body>
 </html>
-`;
+      `;
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(contenidoHtml);
     });
